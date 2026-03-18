@@ -41,5 +41,15 @@ services:
     ports:
       - "8081:8080"
 
+  uptime_kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime_kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+
 volumes:
   shlink_db_data:
+  uptime_kuma_data:
