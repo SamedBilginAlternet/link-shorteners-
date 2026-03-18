@@ -1,0 +1,45 @@
+services:
+  shlink:
+    image: shlinkio/shlink:stable
+    container_name: shlink
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DEFAULT_DOMAIN: ${SHLINK_DOMAIN}
+      IS_HTTPS_ENABLED: ${SHLINK_HTTPS}
+      DB_DRIVER: postgres
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: shlink_db
+      INITIAL_API_KEY: ${SHLINK_API_KEY}
+    depends_on:
+      shlink_db:
+        condition: service_healthy
+
+  shlink_db:
+    image: postgres:16-alpine
+    container_name: shlink_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - shlink_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  shlink_web:
+    image: shlinkio/shlink-web-client:stable
+    container_name: shlink_web
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+
+volumes:
+  shlink_db_data:

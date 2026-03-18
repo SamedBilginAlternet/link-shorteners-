@@ -1,0 +1,41 @@
+services:
+  yourls:
+    image: yourls:apache
+    container_name: yourls
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    environment:
+      YOURLS_DB_HOST: yourls_db
+      YOURLS_DB_USER: ${DB_USER}
+      YOURLS_DB_PASS: ${DB_PASSWORD}
+      YOURLS_DB_NAME: ${DB_NAME}
+      YOURLS_SITE: ${YOURLS_SITE}
+      YOURLS_USER: ${YOURLS_ADMIN_USER}
+      YOURLS_PASS: ${YOURLS_ADMIN_PASS}
+    depends_on:
+      yourls_db:
+        condition: service_healthy
+    volumes:
+      - yourls_plugins:/var/www/html/user/plugins
+
+  yourls_db:
+    image: mysql:8.0
+    container_name: yourls_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - yourls_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  yourls_db_data:
+  yourls_plugins:
