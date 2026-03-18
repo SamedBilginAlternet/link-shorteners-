@@ -41,6 +41,21 @@ services:
     ports:
       - "8081:8080"
 
+  shlink_kuma_bridge:
+    build: ./bridge
+    container_name: shlink_kuma_bridge
+    restart: unless-stopped
+    environment:
+      SHLINK_API_URL: http://shlink:8080
+      SHLINK_API_KEY: ${SHLINK_API_KEY}
+      KUMA_URL: http://uptime_kuma:3001
+      KUMA_USER: ${KUMA_USER}
+      KUMA_PASS: ${KUMA_PASS}
+      POLL_INTERVAL: ${POLL_INTERVAL:-60}
+    depends_on:
+      - shlink
+      - uptime_kuma
+
   uptime_kuma:
     image: louislam/uptime-kuma:1
     container_name: uptime_kuma
