@@ -1,0 +1,8 @@
+[
+  {
+    "id": "local-shlink",
+    "name": "Shlink",
+    "url": "__SHLINK_URL__",
+    "apiKey": "__SHLINK_API_KEY__"
+  }
+]

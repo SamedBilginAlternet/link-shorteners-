@@ -33,9 +33,14 @@ services:
       retries: 10
 
   shlink_web:
-    image: shlinkio/shlink-web-client:stable
+    build: ./web
     container_name: shlink_web
     restart: unless-stopped
+    environment:
+      SHLINK_PUBLIC_URL: ${SHLINK_PUBLIC_URL}
+      SHLINK_API_KEY: ${SHLINK_API_KEY}
+    depends_on:
+      - shlink
 
   nginx:
     build: ./nginx
